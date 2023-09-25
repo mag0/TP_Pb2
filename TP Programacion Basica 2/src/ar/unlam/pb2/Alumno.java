@@ -2,8 +2,8 @@ package ar.unlam.pb2;
 
 import java.time.LocalDate;
 
-public class Alumno extends Persona{
-	
+public class Alumno extends Persona {
+
 	private static Integer generadorId = 1;
 	private Integer id;
 	private LocalDate fechaNacimiento;
@@ -15,7 +15,7 @@ public class Alumno extends Persona{
 		this.fechaNacimiento = fechaNacimiento;
 		this.fechaIngreso = fechaIngreso;
 	}
-	
+
 	public Integer getId() {
 		return id;
 	}

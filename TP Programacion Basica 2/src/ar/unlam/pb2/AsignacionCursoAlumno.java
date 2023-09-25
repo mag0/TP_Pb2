@@ -11,7 +11,9 @@ public class AsignacionCursoAlumno {
 	private Boolean promocionado;
 	private Boolean aprobado;
 	private Boolean desaprobado;
-
+	private Boolean puedeRecuperarPrimerParcial;
+	private Boolean puedeRecuperarSegundoParcial;
+	
 	public AsignacionCursoAlumno(Curso curso, Alumno alumno) {
 		this.idAsignacionCursoAlumno = generadorId++;
 		this.curso = curso;
@@ -20,7 +22,9 @@ public class AsignacionCursoAlumno {
 		this.notaSegundoParcial = new Nota();
 		this.promocionado = false;
 		this.aprobado = false;
-		this.desaprobado = true;
+		this.desaprobado = false;
+		this.puedeRecuperarPrimerParcial = false;
+		this.puedeRecuperarSegundoParcial = false;
 	}
 
 	public Integer getIdAsignacionCursoAlumno() {
@@ -47,59 +51,69 @@ public class AsignacionCursoAlumno {
 		return this.notaPrimerParcial;
 	}
 
-	public void setNotaPrimerParcial(Nota nota) {
-		this.notaPrimerParcial = nota;
-		if (this.notaPrimerParcial.getValorNota() >= 4 && this.notaSegundoParcial.getValorNota() >= 4) {
-			this.aprobado = true;
-			this.desaprobado = false;
-			this.promocionado = false;
-			if (this.notaPrimerParcial.getValorNota() >= 7 && this.notaSegundoParcial.getValorNota() >= 7) {
-				this.aprobado = false;
-				this.desaprobado = false;
-				this.promocionado = true;
-			}
-		} else {
-			this.aprobado = false;
-			this.desaprobado = true;
-			this.promocionado = false;
+	public Boolean setNota(Nota nota) {
+		Boolean notaCargada = true;
+		
+		if(nota.getParcial().equals(Parcial.PRIMER_PARCIAL) && this.getNotaPrimerParcial().getValorNota() == 0) {
+			this.notaPrimerParcial = nota;
+		}else if(nota.getParcial().equals(Parcial.SEGUNDO_PARCIAL) && this.getNotaSegundoParcial().getValorNota() == 0) {
+			this.notaSegundoParcial = nota;
+		}else if(nota.getParcial().equals(Parcial.RECUPERATORIO_PRIMER_PARCIAL) && getPuedeRecuperarPrimerParcial()) {
+			this.notaPrimerParcial = nota;
+			this.puedeRecuperarPrimerParcial = false;
+		}else if(nota.getParcial().equals(Parcial.RECUPERATORIO_SEGUNDO_PARCIAL) && getPuedeRecuperarSegundoParcial()) {
+			this.notaSegundoParcial = nota;
+			this.puedeRecuperarSegundoParcial = false;
+		}else {
+			notaCargada = false;
 		}
+		return notaCargada;
+
 	}
 
 	public Nota getNotaSegundoParcial() {
 		return this.notaSegundoParcial;
 	}
-
-	public void setNotaSegundoParcial(Nota nota) {
-		this.notaSegundoParcial = nota;
-		if (this.notaPrimerParcial.getValorNota() >= 4 && this.notaSegundoParcial.getValorNota() >= 4) {
-			this.aprobado = true;
-			this.desaprobado = false;
-			this.promocionado = false;
-			if (this.notaPrimerParcial.getValorNota() >= 7 && this.notaSegundoParcial.getValorNota() >= 7) {
-				this.aprobado = false;
-				this.desaprobado = false;
-				this.promocionado = true;
-			}
-		} else {
-			this.aprobado = false;
-			this.desaprobado = true;
-			this.promocionado = false;
+	
+	public Boolean getPuedeRecuperarPrimerParcial() {
+		if((this.notaPrimerParcial.getValorNota() < 4 && this.notaSegundoParcial.getValorNota() >= 4) || (this.notaPrimerParcial.getValorNota() < 7 && this.notaSegundoParcial.getValorNota() >= 7)) {
+			this.puedeRecuperarPrimerParcial = true;
 		}
+		return this.puedeRecuperarPrimerParcial;
+	}
+	
+	public Boolean getPuedeRecuperarSegundoParcial() {
+		if((this.notaSegundoParcial.getValorNota() < 4 && this.notaPrimerParcial.getValorNota() >= 4) || (this.notaSegundoParcial.getValorNota() < 7 && this.notaPrimerParcial.getValorNota() >= 7)) {
+			this.puedeRecuperarSegundoParcial = true;
+		}
+		return this.puedeRecuperarSegundoParcial;
 	}
 
-	public Boolean getAprobada() {
+	public Boolean getAprobado() {
+		if (((this.notaPrimerParcial.getValorNota() >= 4 && this.notaPrimerParcial.getValorNota() < 7)
+				&& this.notaSegundoParcial.getValorNota() >= 4)
+				|| ((this.notaSegundoParcial.getValorNota() >= 4 && this.notaSegundoParcial.getValorNota() < 7)
+						&& this.notaPrimerParcial.getValorNota() >= 4)) {
+			this.aprobado = true;
+		}
 		return this.aprobado;
 	}
 
 	public Boolean getPromocionado() {
+		if(this.notaPrimerParcial.getValorNota() >= 7 && this.notaSegundoParcial.getValorNota() >= 7) {
+			this.promocionado = true;
+		}
 		return this.promocionado;
 	}
 
 	public Boolean getDesaprobado() {
+		if(this.notaPrimerParcial.getValorNota() < 4 || this.notaSegundoParcial.getValorNota() < 4) {
+			this.desaprobado = true;
+		}
 		return this.desaprobado;
 	}
-	
+
 	public Integer getNotaFinal() {
-		return (this.notaPrimerParcial.getValorNota() + this.notaSegundoParcial.getValorNota())/2;
+		return (this.notaPrimerParcial.getValorNota() + this.notaSegundoParcial.getValorNota()) / 2;
 	}
 }

@@ -1,5 +1,7 @@
 package ar.unlam.pb2;
 
+import java.util.Objects;
+
 public class Curso {
 
 	private Integer comision;
@@ -98,6 +100,23 @@ public class Curso {
 
 	public void setAula(Aula aula) {
 		this.aula = aula;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(comision);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Curso other = (Curso) obj;
+		return Objects.equals(comision, other.comision);
 	}
 
 }
